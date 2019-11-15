@@ -53,7 +53,7 @@ module.exports = (robot) => {
         let branchName = context.payload.pull_request.head.ref
         let testUrl = `${branchName}.${process.env.TEST_DOMAIN}`
         await context.github.pullRequests.update(context.issue({
-          body: `Test here: [${testUrl}](https://${testUrl})\n\n-----${context.payload.pull_request.body}`
+          body: `**Test here: [${testUrl}](https://${testUrl})**\n\n-----${context.payload.pull_request.body}`
         }))
       }
 
