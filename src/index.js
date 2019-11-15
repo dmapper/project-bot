@@ -48,6 +48,15 @@ module.exports = (robot) => {
       const issueUrl = context.payload.issue ? context.payload.issue.html_url : context.payload.pull_request.html_url.replace('/pull/', '/issues/')
       logger.trace(`Event received for ${webhookName}`)
 
+      logger.trace(`Modify PR by adding the URL to test it`)
+      if (webhookName === 'pull_request.opened') {
+        let branchName = context.payload.pull_request.head.ref
+        let testUrl = `${branchName}.${process.env.TEST_DOMAIN}`
+        await context.github.pullRequests.update(context.issue({
+          body: `Test here: [${testUrl}](https://${testUrl})\n\n-----${context.payload.pull_request.body}`
+        }))
+      }
+
       // A couple commands occur when a new Issue or Pull Request is created.
       // In those cases, a new Card needs to be created, rather than moving an existing card.
       if (createsACard) {
