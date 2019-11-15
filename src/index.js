@@ -48,19 +48,17 @@ module.exports = (robot) => {
       const issueUrl = context.payload.issue ? context.payload.issue.html_url : context.payload.pull_request.html_url.replace('/pull/', '/issues/')
       logger.trace(`Event received for ${webhookName}`)
 
-      logger.trace(`Modify PR by adding the URL to test it`)
       if (webhookName === 'pull_request.opened') {
-        let branchName = context.payload.pull_request.head.ref
         let testDomain = context.payload.repository.homepage
         if (testDomain) {
+          logger.trace(`Modify PR by adding the URL to test it`)
+          let branchName = context.payload.pull_request.head.ref
           testDomain = testDomain.replace(/https?\:\/\//, '')
-        } else {
-          testDomain = 'SET_WEBSITE_IN_REPO_DESCRIPTION'
+          let testUrl = `${branchName}.${testDomain}`
+          await context.github.pullRequests.update(context.issue({
+            body: `**Test here: [${testUrl}](https://${testUrl})**\n\n-----${context.payload.pull_request.body}`
+          }))
         }
-        let testUrl = `${branchName}.${testDomain}`
-        await context.github.pullRequests.update(context.issue({
-          body: `**Test here: [${testUrl}](https://${testUrl})**\n\n-----${context.payload.pull_request.body}`
-        }))
       }
 
       // A couple commands occur when a new Issue or Pull Request is created.
