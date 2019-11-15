@@ -53,7 +53,7 @@ module.exports = (robot) => {
         let branchName = context.payload.pull_request.head.ref
         let testDomain = context.payload.repository.homepage
         if (testDomain) {
-          testDomain.replace(/https?\:\/\//, '')
+          testDomain = testDomain.replace(/https?\:\/\//, '')
         } else {
           testDomain = 'SET_WEBSITE_IN_REPO_DESCRIPTION'
         }
