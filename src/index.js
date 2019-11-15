@@ -23,27 +23,13 @@ async function retryQuery (context, query, args) {
 const PROJECT_FRAGMENT = `
   name
   id
+  url
   columns(first: 50) {
     totalCount
     nodes {
       id
       url
-      firstCards: cards(first: 1, archivedStates: NOT_ARCHIVED) {
-        totalCount
-        nodes {
-          url
-          id
-          note
-        }
-      }
-      lastCards: cards(last: 1, archivedStates: NOT_ARCHIVED) {
-        totalCount
-        nodes {
-          url
-          id
-          note
-        }
-      }
+      name
     }
   }
 `
@@ -71,18 +57,6 @@ module.exports = (robot) => {
               ... on Issue {
                 id
                 repository {
-                  owner {
-                    url
-                    ${''/* Projects can be attached to an Organization... */}
-                    ... on Organization {
-                      projects(first: 10, states: [OPEN]) {
-                        nodes {
-                          ${PROJECT_FRAGMENT}
-                        }
-                      }
-                    }
-                  }
-                  ${''/* ... or on a Repository */}
                   projects(first: 10, states: [OPEN]) {
                     nodes {
                       ${PROJECT_FRAGMENT}
@@ -96,10 +70,6 @@ module.exports = (robot) => {
         const { resource } = graphResult
 
         let allProjects = []
-        if (resource.repository.owner.projects) {
-          // Add Org Projects
-          allProjects = allProjects.concat(resource.repository.owner.projects.nodes)
-        }
         if (resource.repository.projects) {
           allProjects = allProjects.concat(resource.repository.projects.nodes)
         }
