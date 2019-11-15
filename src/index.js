@@ -51,7 +51,13 @@ module.exports = (robot) => {
       logger.trace(`Modify PR by adding the URL to test it`)
       if (webhookName === 'pull_request.opened') {
         let branchName = context.payload.pull_request.head.ref
-        let testUrl = `${branchName}.${process.env.TEST_DOMAIN}`
+        let testDomain = context.payload.repository.homepage
+        if (testDomain) {
+          testDomain.replace(/https?\:\/\//, '')
+        } else {
+          testDomain = 'SET_WEBSITE_IN_REPO_DESCRIPTION'
+        }
+        let testUrl = `${branchName}.${testDomain}`
         await context.github.pullRequests.update(context.issue({
           body: `**Test here: [${testUrl}](https://${testUrl})**\n\n-----${context.payload.pull_request.body}`
         }))
