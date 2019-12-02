@@ -56,7 +56,7 @@ module.exports = (robot) => {
           testDomain = testDomain.replace(/https?\:\/\//, '')
           let testUrl = `${branchName}.${testDomain}`
           await context.github.pullRequests.update(context.issue({
-            body: `**Test here: [${testUrl}](https://${testUrl})**\n\n-----${context.payload.pull_request.body}`
+            body: `**Test here: [${testUrl}](https://${testUrl})**\n${context.payload.pull_request.body}`
           }))
         }
       }
